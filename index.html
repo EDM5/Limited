@@ -72,7 +72,6 @@ var map = {
         x: 2,
         y: 2,
         colour: '#FF9900',
-        jumps: 1
     },
 
     scripts: {
@@ -119,7 +118,8 @@ var Standard = function () {
             y: 0
         },
         
-        can_jump: true
+        can_jump: true,
+        jumps: 1
     };
 
     window.onkeydown = this.keydown.bind(this);
