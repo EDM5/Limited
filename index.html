@@ -32,7 +32,6 @@ var map = {
         {id: 11,colour: '#0FF',solid: 0,script: 'unlock'}
     ],
 
-    /* An array representing the map tiles. Each number corresponds to a key */
     data: [
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
         [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
@@ -47,27 +46,21 @@ var map = {
         [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
         [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
         [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-        [2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2],
-        [2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2],
+        [2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+        [2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2],
+        [2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     ],
 
-    /* Default gravity of the map */
-    
     gravity: {
         x: 0,
         y: 0.3
     },
     
-    /* Velocity limits */
-
     vel_limit: {
         x: 2,
         y: 16
     },
-
-    /* Movement speed when the key is pressed */
     
     movement_speed: {
         jump: 6,
@@ -75,29 +68,21 @@ var map = {
         right: 0.3
     },
     
-    /* The coordinates at which the player spawns and the colour of the player */
-
     player: {
         x: 2,
         y: 2,
         colour: '#FF9900'
     },
-    
-    /* scripts refered to by the "script" variable in the tile keys */
 
     scripts: {
-        /* you can just use "this" instead of your engine variable ("game"), but Codepen doesn't like it */
         change_colour: 'game.player.colour = "#"+(Math.random()*0xFFFFFF<<0).toString(16);',
-        /* you could load a new map variable here */
         next_level: 'alert("Yay! You won! Reloading map.");game.load_map(map);',
         death: 'alert("You died!");game.load_map(map);',
         unlock: 'game.current_map.keys[10].solid = 0;game.current_map.keys[10].colour = "#888";'
     }
 };
 
-/* Clarity engine */
-
-var Clarity = function () {
+var Standard = function () {
 
     this.alert_errors   = false;
     this.log_info       = true;
@@ -140,24 +125,24 @@ var Clarity = function () {
     window.onkeyup   = this.keyup.bind(this);
 };
 
-Clarity.prototype.error = function (message) {
+Standard.prototype.error = function (message) {
 
     if (this.alert_errors) alert(message);
     if (this.log_info) console.log(message);
 };
 
-Clarity.prototype.log = function (message) {
+Standard.prototype.log = function (message) {
 
     if (this.log_info) console.log(message);
 };
 
-Clarity.prototype.set_viewport = function (x, y) {
+Standard.prototype.set_viewport = function (x, y) {
 
     this.viewport.x = x;
     this.viewport.y = y;
 };
 
-Clarity.prototype.keydown = function (e) {
+Standard.prototype.keydown = function (e) {
 
     var _this = this;
 
@@ -174,7 +159,7 @@ Clarity.prototype.keydown = function (e) {
     }
 };
 
-Clarity.prototype.keyup = function (e) {
+Standard.prototype.keyup = function (e) {
 
     var _this = this;
 
@@ -191,7 +176,7 @@ Clarity.prototype.keyup = function (e) {
     }
 };
 
-Clarity.prototype.load_map = function (map) {
+Standard.prototype.load_map = function (map) {
 
     if (typeof map      === 'undefined'
      || typeof map.data === 'undefined'
@@ -255,12 +240,12 @@ Clarity.prototype.load_map = function (map) {
     return true;
 };
 
-Clarity.prototype.get_tile = function (x, y) {
+Standard.prototype.get_tile = function (x, y) {
 
     return (this.current_map.data[y] && this.current_map.data[y][x]) ? this.current_map.data[y][x] : 0;
 };
-//I AM HERE
-Clarity.prototype.draw_tile = function (x, y, tile, context) {
+
+Standard.prototype.draw_tile = function (x, y, tile, context) {
 
     if (!tile || !tile.colour) return;
 
@@ -273,7 +258,7 @@ Clarity.prototype.draw_tile = function (x, y, tile, context) {
     );
 };
 
-Clarity.prototype.draw_map = function (context, fore) {
+Standard.prototype.draw_map = function (context, fore) {
 
     for (var y = 0; y < this.current_map.data.length; y++) {
 
@@ -302,7 +287,7 @@ Clarity.prototype.draw_map = function (context, fore) {
     if (!fore) this.draw_map(context, true);
 };
 
-Clarity.prototype.move_player = function () {
+Standard.prototype.move_player = function () {
 
     var tX = this.player.loc.x + this.player.vel.x;
     var tY = this.player.loc.y + this.player.vel.y;
@@ -369,8 +354,6 @@ Clarity.prototype.move_player = function () {
     
     if (left1.solid || left2.solid || right1.solid || right2.solid) {
 
-        /* fix overlap */
-
         while (this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near2).solid)
             this.player.loc.x += 0.1;
@@ -378,8 +361,6 @@ Clarity.prototype.move_player = function () {
         while (this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near2).solid)
             this.player.loc.x -= 0.1;
-
-        /* tile bounce */
 
         var bounce = 0;
 
@@ -394,8 +375,6 @@ Clarity.prototype.move_player = function () {
     
     if (top1.solid || top2.solid || bottom1.solid || bottom2.solid) {
 
-        /* fix overlap */
-        
         while (this.get_tile(x_near1, Math.floor(this.player.loc.y / this.tile_size)).solid
             || this.get_tile(x_near2, Math.floor(this.player.loc.y / this.tile_size)).solid)
             this.player.loc.y += 0.1;
@@ -404,8 +383,6 @@ Clarity.prototype.move_player = function () {
             || this.get_tile(x_near2, Math.ceil(this.player.loc.y / this.tile_size)).solid)
             this.player.loc.y -= 0.1;
 
-        /* tile bounce */
-        
         var bounce = 0;
         
         if (top1.solid && top1.bounce > bounce) bounce = top1.bounce;
@@ -423,8 +400,6 @@ Clarity.prototype.move_player = function () {
         
     }
     
-    // adjust camera
-
     var c_x = Math.round(this.player.loc.x - this.viewport.x/2);
     var c_y = Math.round(this.player.loc.y - this.viewport.y/2);
     var x_dif = Math.abs(c_x - this.camera.x);
@@ -488,7 +463,7 @@ Clarity.prototype.move_player = function () {
     this.last_tile = tile.id;
 };
 
-Clarity.prototype.update_player = function () {
+Standard.prototype.update_player = function () {
 
     if (this.key.left) {
 
@@ -514,7 +489,7 @@ Clarity.prototype.update_player = function () {
     this.move_player();
 };
 
-Clarity.prototype.draw_player = function (context) {
+Standard.prototype.draw_player = function (context) {
 
     context.fillStyle = this.player.colour;
 
@@ -531,18 +506,16 @@ Clarity.prototype.draw_player = function (context) {
     context.fill();
 };
 
-Clarity.prototype.update = function () {
+Standard.prototype.update = function () {
 
     this.update_player();
 };
 
-Clarity.prototype.draw = function (context) {
+Standard.prototype.draw = function (context) {
 
     this.draw_map(context, false);
     this.draw_player(context);
 };
-
-/* Setup of the engine */
 
 window.requestAnimFrame =
   window.requestAnimationFrame ||
@@ -560,11 +533,10 @@ var canvas = document.getElementById('canvas'),
 canvas.width = 400;
 canvas.height = 400;
 
-var game = new Clarity();
+var game = new Standard();
     game.set_viewport(canvas.width, canvas.height);
     game.load_map(map);
 
-    /* Limit the viewport to the confines of the map */
     game.limit_viewport = true;
 
 var Loop = function() {
