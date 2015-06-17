@@ -547,11 +547,6 @@ var Loop = function() {
   ctx.fillStyle = '#333';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
-  ctx.font = '12pt Comic Sans';
-  ctx.fillStyle = '#fff';
-  ctx.textBaseline = 'top';
-  ctx.fillText("Jumps:" + this.player.jumps, 10, 10);
-  
   game.update();
   game.draw(ctx);
   
