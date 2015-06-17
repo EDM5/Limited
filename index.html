@@ -71,7 +71,8 @@ var map = {
     player: {
         x: 2,
         y: 2,
-        colour: '#FF9900'
+        colour: '#FF9900',
+        jumps: 1
     },
 
     scripts: {
@@ -474,9 +475,11 @@ Standard.prototype.update_player = function () {
     if (this.key.up) {
 
         if (this.player.can_jump && this.player.vel.y > -this.current_map.vel_limit.y) {
+          if (this.player.jumps > 0) {
             
             this.player.vel.y -= this.current_map.movement_speed.jump;
             this.player.can_jump = false;
+          }
         }
     }
 
