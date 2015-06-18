@@ -169,13 +169,13 @@ Standard.prototype.keydown = function (e) {
     var _this = this;
 
     switch (e.keyCode) {
-    case 37:
+    case 65:
         _this.key.left = true;
         break;
-    case 38:
+    case 83:
         _this.key.up = true;
         break;
-    case 39:
+    case 68:
         _this.key.right = true;
         break;
     }
@@ -186,13 +186,13 @@ Standard.prototype.keyup = function (e) {
     var _this = this;
 
     switch (e.keyCode) {
-    case 37:
+    case 65:
         _this.key.left = false;
         break;
-    case 38:
+    case 83:
         _this.key.up = false;
         break;
-    case 39:
+    case 68:
         _this.key.right = false;
         break;
     }
@@ -582,13 +582,19 @@ var Loop = function() {
   ctx.font = '12pt Comic Sans';
   ctx.fillStyle = '#CCC';
   ctx.textBaseline = 'top';
-  ctx.fillText("Jumps:" + jumps, 10, 10);
+  ctx.fillText("Jumps: " + jumps, 10, 10);
   
   window.requestAnimFrame(Loop);
 };
 
 Loop();
     </script>
+    <h2>
+      About Limited
+    </h2>
+    <p>
+      WASD keys to move. Limited is a game about precision.  You have a limited number of jumps to complete the level.  When you get to zero jumps, you can't jump any more.  It's as simple as that!
+    </p>
     <h2>
       About Team Tophat
     </h2>
