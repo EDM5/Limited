@@ -17,6 +17,7 @@
       
       alert('Press "OK" to play!');
       
+      var jumps = 99;
 var map = {
 
     tile_size: 16,
@@ -500,11 +501,11 @@ Standard.prototype.update_player = function () {
     if (this.key.up) {
 
         if (this.player.can_jump && this.player.vel.y > -this.current_map.vel_limit.y) {
-          if (this.player.jumps > 0) {
+          if (jumps > 0) {
             
             this.player.vel.y -= this.current_map.movement_speed.jump;
             this.player.can_jump = false;
-            this.player.jumps -= 1;
+            jumps -= 1;
           }
         }
     }
