@@ -139,7 +139,7 @@ var Standard = function () {
         },
         
         can_jump: true,
-        jumps: 1
+        jumps: 99
     };
 
     window.onkeydown = this.keydown.bind(this);
@@ -503,6 +503,7 @@ Standard.prototype.update_player = function () {
             
             this.player.vel.y -= this.current_map.movement_speed.jump;
             this.player.can_jump = false;
+            this.player.jumps -= 1;
           }
         }
     }
@@ -570,6 +571,8 @@ var Loop = function() {
   
   ctx.fillStyle = '#333';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillText("Jumps:" + this.player.jumps);
   
   game.update();
   game.draw(ctx);
