@@ -571,13 +571,13 @@ var game = new Standard();
 
 var Loop = function() {
   
-  ctx.fillStyle = '#333';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
   ctx.font = '12pt Comic Sans';
   ctx.fillStyle = '#000';
   ctx.textBaseline = 'top';
   ctx.fillText("Jumps:" + jumps, 10, 10);
+  
+  ctx.fillStyle = '#333';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   
   game.update();
   game.draw(ctx);
