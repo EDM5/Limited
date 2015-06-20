@@ -394,17 +394,17 @@ Standard.prototype.move_player = function () {
     this.player.loc.x += this.player.vel.x;
     this.player.loc.y += this.player.vel.y;
     
-    this.player.vel.x *= .93;
+    this.player.vel.x *= .95;
     
     if (left1.solid || left2.solid || right1.solid || right2.solid) {
 
         while (this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near2).solid)
-            this.player.loc.x += 0.1;
+            this.player.loc.x += 0.15;
 
         while (this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near2).solid)
-            this.player.loc.x -= 0.1;
+            this.player.loc.x -= 0.15;
 
         var bounce = 0;
 
@@ -421,11 +421,11 @@ Standard.prototype.move_player = function () {
 
         while (this.get_tile(x_near1, Math.floor(this.player.loc.y / this.tile_size)).solid
             || this.get_tile(x_near2, Math.floor(this.player.loc.y / this.tile_size)).solid)
-            this.player.loc.y += 0.1;
+            this.player.loc.y += 0.15;
 
         while (this.get_tile(x_near1, Math.ceil(this.player.loc.y / this.tile_size)).solid
             || this.get_tile(x_near2, Math.ceil(this.player.loc.y / this.tile_size)).solid)
-            this.player.loc.y -= 0.1;
+            this.player.loc.y -= 0.15;
 
         var bounce = 0;
         
