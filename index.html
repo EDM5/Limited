@@ -100,9 +100,9 @@ var map = {
     },
     
     movement_speed: {
-        jump: 6,
-        left: 0.3,
-        right: 0.3
+        jump: 9,
+        left: 0.45,
+        right: 0.45
     },
     
     player: {
@@ -595,7 +595,7 @@ var Loop = function() {
   game.update();
   game.draw(ctx);
   
-  ctx.font = '12pt Comic Sans';
+  ctx.font = '18pt Comic Sans';
   ctx.fillStyle = '#CCC';
   ctx.textBaseline = 'top';
   ctx.fillText("Jumps: " + jumps, 10, 10);
