@@ -101,8 +101,8 @@ var map = {
     
     movement_speed: {
         jump: 9,
-        left: 0.5,
-        right: 0.5
+        left: 0.45,
+        right: 0.45
     },
     
     player: {
@@ -234,8 +234,8 @@ Standard.prototype.load_map = function (map) {
     game.current_map.keys[10].solid = 1;
 
     this.current_map.background = map.background || '#333';
-    this.current_map.gravity = map.gravity || {x: 0, y: 0.3};
-    this.tile_size = map.tile_size || 16;
+    this.current_map.gravity = map.gravity || {x: 0, y: 0.45};
+    this.tile_size = map.tile_size || 32;
 
     var _this = this;
     
@@ -394,7 +394,7 @@ Standard.prototype.move_player = function () {
     this.player.loc.x += this.player.vel.x;
     this.player.loc.y += this.player.vel.y;
     
-    this.player.vel.x *= .9;
+    this.player.vel.x *= .93;
     
     if (left1.solid || left2.solid || right1.solid || right2.solid) {
 
