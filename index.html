@@ -19,7 +19,7 @@
       var jumps = 99;
 var map = {
 
-    tile_size: 24,
+    tile_size: 16,
     
     keys: [
         {id: 0, colour: '#FF0', solid: 0},
@@ -91,7 +91,7 @@ var map = {
 
     gravity: {
         x: 0,
-        y: 0.45
+        y: 0.3
     },
     
     vel_limit: {
@@ -100,9 +100,9 @@ var map = {
     },
     
     movement_speed: {
-        jump: 9,
-        left: 1.5,
-        right: 1.5
+        jump: 6,
+        left: 0.3,
+        right: 0.3
     },
     
     player: {
@@ -394,17 +394,17 @@ Standard.prototype.move_player = function () {
     this.player.loc.x += this.player.vel.x;
     this.player.loc.y += this.player.vel.y;
     
-    this.player.vel.x *= .95;
+    this.player.vel.x *= .9;
     
     if (left1.solid || left2.solid || right1.solid || right2.solid) {
 
         while (this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near2).solid)
-            this.player.loc.x += 0.15;
+            this.player.loc.x += 0.1;
 
         while (this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near2).solid)
-            this.player.loc.x -= 0.15;
+            this.player.loc.x -= 0.1;
 
         var bounce = 0;
 
@@ -421,11 +421,11 @@ Standard.prototype.move_player = function () {
 
         while (this.get_tile(x_near1, Math.floor(this.player.loc.y / this.tile_size)).solid
             || this.get_tile(x_near2, Math.floor(this.player.loc.y / this.tile_size)).solid)
-            this.player.loc.y += 0.15;
+            this.player.loc.y += 0.1;
 
         while (this.get_tile(x_near1, Math.ceil(this.player.loc.y / this.tile_size)).solid
             || this.get_tile(x_near2, Math.ceil(this.player.loc.y / this.tile_size)).solid)
-            this.player.loc.y -= 0.15;
+            this.player.loc.y -= 0.1;
 
         var bounce = 0;
         
