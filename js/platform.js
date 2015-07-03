@@ -1,217 +1,242 @@
-var map = {
-  tile_size: 16,
-  
-  keys: [
-    {id: 0, color: '#333', solid: 0},
-    {id: 1, color: '#888', solid: 0},
-    {id: 2, color: '#555', solid: 1, bounce: 0.35},
-    {id: 3, color: 'rgba(121, 220, 242, 0.4)', friction: {x: 0.9, y: 0.9} gravity: {x: 0, y: 0.1}, jump: 1, fore: 1},
-    {id: 4, color: '#777', jump: 1},
-    {id: 5, color: '#E373FA', solid: 1, bounce: 1.1},
-    {id: 6, color: '#666', solid: 1, bounce: 0},
-    {id: 7, color: '#73C6FA', solid: 0, script: 'change_color'},
-    {id: 8, color: '#FADF73', solid: 0, script: 'next_level'},
-    {id: 9, color: '#C93232', solid: 0, script: 'death'},
-    {id: 10, color: '#555', solid: 1},
-    {id: 11, color: '#0FF', solid: 0, script: 'unlock'},
-  ],
-  
-  data: [
-      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-      [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-      [2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-      [2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-      [2, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-      [2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-      [2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2],
-      [2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2],
-      [2, 1, 1, 1, 1, 2, 9, 2, 1, 1, 1, 1, 1, 1, 2],
-      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ],
-    
-  gravity: {
-    x: 0,
-    y: 0.3
-  },
-  
-  vel_limit: {
-    x: 2,
-    y: 16
-  },
-  
-  movement_speed: {
-    jump: 6,
-    left: 0.3,
-    right: 0.3
-  },
-  
-  player: {
-    x: 2,
-    y: 2,
-    color: '#FF9900'
-  },
-  
-  scripts: {
-    change_color: 'game.player.color = "#" + (Math.random() * 0xFFFFFF<<0).toString(16);',
-    next_level: 'alert("Congratulations! You beat the map!"); game.load_map(map);',
-    death: 'alert("You lost!"); game.load_map(map);',
-    unlock: 'game.current_map.keys[10].solid = 0; game.current_map.keys[10].color = #888;'
-  }
-};
-
-var Standard = function() {
-  this.alert_errors = false;
-  this.log_info = true;
-  this.tile_size = 16;
-  this.limit_viewport = false;
-  this.jump_switch = 0;
-  
-  this.viewport = {
-    x: 200,
-    y: 200
-  };
-  
-  this.camera = {
-    x: 0,
-    y: 0
-  };
-  
-  this.key = {
-    left: false,
-    right: false,
-    up: false
-  };
-  
-  this.player = {
-    
-    loc: {
-      x: 0,
-      y: 0
-    },
-    
-    vel: {
-      x: 0,
-      y: 0
-    },
-    
-    can_jump: true
-  };
-  
-  window.onkeydown = this.keydown.bind(this);
-  window.onkeyup = this.keyup.bind(this);
-};
-
-Standard.prototype.error = function(message) {
-  if(this.alert_errors) alert(message);
-  if(this.log_info) console.log(message);
-};
-
-Standard.prototype.log = function(message) {
-  if(this.log_info) console.log(message);
-};
-
-Standard.prototype.set_viewpoint = function(x, y) {
-  this.viewport.x = x;
-  this.viewport.y = y;
-};
-
-Standard.prototype.keydown = function(e) {
-  var _this = this;
-  
-  switch(e.keyCode) {
-    case 65:
-      _this.key.left = true;
-      break;
-    case 83:
-      _this.key.up = true;
-      break;
-    case 68: 
-      _this.key.right = true;
-      break;
-  }
-};
-
-Standard.prototype.keyup = function(e) {
-  var _this = this;
-  
-  switch(e.keyCode) {
-    case 65:
-      _this.key.left = false;
-      break;
-    case 83:
-      _this.key.up = false;
-      break;
-    case 68: 
-      _this.key.right = false;
-      break;
-  }
-};
-
-Standard.prototype.load_map = function(map) {
-  if(typeof map === 'undefined'
-  || typeof map.data === 'undefined'
-  || typeof map.keys === 'undefined') {
-    this.error('Error: invalid map data');
-    return false;
-  }
-  
-  this.current_map = map;
-  this.current_map.background = map.background || '#333';
-  this.current_map.gravity = map.gravity || {x: 0, y: 0.3};
-  this.tile_size = map.tile_size || 16;
-  
-  var _this = this;
-  
-  this.current_map.width = 0;
-  this.current_map.height = 0;
-  
-  map.keys.forEach(function(key) {
-    map.data.forEach(function (row, y) {
-      _this.current_map.height = Math.max(_this.current_map.height, y);
+alert('Press "OK" to play!');
       
-      row.forEach(function(tile, x) {
-        _this.current_map.width = Math.max(_this.current_map.width, x);
+      var jumps = 99;
+var map = {
+    tile_size: 16,
+    
+    keys: [
+        {id: 0, colour: '#FF0', solid: 0},
+        {id: 1, colour: '#888', solid: 0},
+        {id: 2,colour: '#555',solid: 1,bounce: 0.35},
+        {id: 3,colour: 'rgba(121, 220, 242, 0.4)',friction: {x: 0.9,y: 0.9},gravity: {x: 0,y: 0.1},jump: 1,fore: 1},
+        {id: 4,colour: '#777',jump: 1},
+        {id: 5,colour: '#E373FA',solid: 1,bounce: 1.1},
+        {id: 6,colour: '#666',solid: 1,bounce: 0},
+        {id: 7,colour: '#73C6FA',solid: 0,script: 'change_colour'},
+        {id: 8,colour: '#FADF73',solid: 0,script: 'next_level'},
+        {id: 9,colour: '#C93232',solid: 0,script: 'death'},
+        {id: 10,colour: '#555',solid: 1},
+        {id: 11,colour: '#0FF',solid: 0,script: 'unlock'}
+    ],
+    data: [
+        [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 9, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 9, 9, 1, 1, 9, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 9, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 2, 2, 1, 9, 1, 1, 9, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 9, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 5, 5, 2, 2, 5, 5, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 10, 10, 10, 10, 2],
+        [2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 10, 10, 10, 10, 2],
+        [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 10, 10, 10, 10, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 9, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 9, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 9, 9, 1, 1, 1, 1, 2],
+        [2, 1, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [2, 1, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2],
+        [2, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 2],
+        [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2],
+        [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+    ],
+    gravity: {
+        x: 0,
+        y: 0.3
+    },
+    
+    vel_limit: {
+        x: 2,
+        y: 16
+    },
+    
+    movement_speed: {
+        jump: 6,
+        left: 0.3,
+        right: 0.3
+    },
+    
+    player: {
+        x: 2,
+        y: 2,
+        colour: '#FF9900',
+    },
+    scripts: {
+        change_colour: 'game.player.colour = "#"+(Math.random()*0xFFFFFF<<0).toString(16);',
+        next_level: 'alert("Yay! You won! Reloading map.");game.load_map(map);',
+        death: 'alert("You died!");game.load_map(map);',
+        unlock: 'game.current_map.keys[10].solid = 0;game.current_map.keys[10].colour = "#888"; game.current_map.keys[11].colour = "#66FF00";'
+    }
+};
+var Standard = function () {
+    this.alert_errors   = false;
+    this.log_info       = true;
+    this.tile_size      = 16;
+    this.limit_viewport = false;
+    this.jump_switch    = 0;
+    
+    this.viewport = {
+        x: 200,
+        y: 200
+    };
+    
+    this.camera = {
+        x: 0,
+        y: 0
+    };
+    
+    this.key = {
+        left: false,
+        right: false,
+        up: false
+    };
+    this.player = {
+        loc: {
+            x: 0,
+            y: 0
+        },
         
-        if(tile == key.id)
-          _this.current_map.data[y][x] = key;
-      });
+        vel: {
+            x: 0,
+            y: 0
+        },
+        
+        can_jump: true,
+        jumps: 99
+    };
+    window.onkeydown = this.keydown.bind(this);
+    window.onkeyup   = this.keyup.bind(this);
+};
+Standard.prototype.error = function (message) {
+    if (this.alert_errors) alert(message);
+    if (this.log_info) console.log(message);
+};
+Standard.prototype.log = function (message) {
+    if (this.log_info) console.log(message);
+};
+Standard.prototype.set_viewport = function (x, y) {
+    this.viewport.x = x;
+    this.viewport.y = y;
+};
+Standard.prototype.keydown = function (e) {
+    var _this = this;
+    switch (e.keyCode) {
+    case 65:
+        _this.key.left = true;
+        break;
+    case 87:
+        _this.key.up = true;
+        break;
+    case 68:
+        _this.key.right = true;
+        break;
+    }
+};
+Standard.prototype.keyup = function (e) {
+    var _this = this;
+    switch (e.keyCode) {
+    case 65:
+        _this.key.left = false;
+        break;
+    case 87:
+        _this.key.up = false;
+        break;
+    case 68:
+        _this.key.right = false;
+        break;
+    }
+};
+Standard.prototype.load_map = function (map) {
+    if (typeof map      === 'undefined'
+     || typeof map.data === 'undefined'
+     || typeof map.keys === 'undefined') {
+        this.error('Error: Invalid map data!');
+        return false;
+    }
+    this.current_map = map;
+    
+    jumps = 99;
+    
+    game.current_map.keys[10].colour = "#555";
+    game.current_map.keys[11].colour = "#0FF";
+    game.current_map.keys[10].solid = 1;
+    this.current_map.background = map.background || '#333';
+    this.current_map.gravity = map.gravity || {x: 0, y: 0.45};
+    this.tile_size = map.tile_size || 32;
+    var _this = this;
+    
+    this.current_map.width = 0;
+    this.current_map.height = 0;
+    map.keys.forEach(function (key) {
+        map.data.forEach(function (row, y) {
+            
+            _this.current_map.height = Math.max(_this.current_map.height, y);
+            row.forEach(function (tile, x) {
+                
+                _this.current_map.width = Math.max(_this.current_map.width, x);
+                if (tile == key.id)
+                    _this.current_map.data[y][x] = key;
+            });
+        });
     });
-  });
-  
-  this.current_map.width_p = this.current_map.width * this.tile_size;
-  this.current_map.height_p = this.current_map.height * this.tile_size;
-  this.player.loc.x = map.player.x * this.tile_size || 0;
-  this.player.loc.y = map.player.y * this.tile_size || 0;
-  this.player.colour = map.player.colour || '#000';
-  
-  this.key.left  = false;
-  this.key.up    = false;
-  this.key.right = false;
     
-  this.camera = {
-      x: 0,
-      y: 0
-  };
+    this.current_map.width_p = this.current_map.width * this.tile_size;
+    this.current_map.height_p = this.current_map.height * this.tile_size;
+    this.player.loc.x = map.player.x * this.tile_size || 0;
+    this.player.loc.y = map.player.y * this.tile_size || 0;
+    this.player.colour = map.player.colour || '#000';
+  
+    this.key.left  = false;
+    this.key.up    = false;
+    this.key.right = false;
     
-  this.player.vel = {
-      x: 0,
-      y: 0
-  };
-
-  this.log('Successfully loaded map data.');
-
-  return true;
+    this.camera = {
+        x: 0,
+        y: 0
+    };
+    
+    this.player.vel = {
+        x: 0,
+        y: 0
+    };
+    this.log('Successfully loaded map data.');
+    return true;
 };
-
-Standard.prototype.get_tile = function(x, y) {
-  return(this.current_map.data[y] && this.current_map.data[y][x])?
-  this.current_map.data[y][x] : 0;
+Standard.prototype.get_tile = function (x, y) {
+    return (this.current_map.data[y] && this.current_map.data[y][x]) ? this.current_map.data[y][x] : 0;
 };
-
 Standard.prototype.draw_tile = function (x, y, tile, context) {
-
     if (!tile || !tile.colour) return;
-
     context.fillStyle = tile.colour;
     context.fillRect(
         x,
@@ -220,15 +245,10 @@ Standard.prototype.draw_tile = function (x, y, tile, context) {
         this.tile_size
     );
 };
-
 Standard.prototype.draw_map = function (context, fore) {
-
     for (var y = 0; y < this.current_map.data.length; y++) {
-
         for (var x = 0; x < this.current_map.data[y].length; x++) {
-
             if ((!fore && !this.current_map.data[y][x].fore) || (fore && this.current_map.data[y][x].fore)) {
-
                 var t_x = (x * this.tile_size) - this.camera.x;
                 var t_y = (y * this.tile_size) - this.camera.y;
                 
@@ -246,17 +266,12 @@ Standard.prototype.draw_map = function (context, fore) {
             }
         }
     }
-
     if (!fore) this.draw_map(context, true);
 };
-
 Standard.prototype.move_player = function () {
-
     var tX = this.player.loc.x + this.player.vel.x;
     var tY = this.player.loc.y + this.player.vel.y;
-
     var offset = Math.round((this.tile_size / 2) - 1);
-
     var tile = this.get_tile(
         Math.round(this.player.loc.x / this.tile_size),
         Math.round(this.player.loc.y / this.tile_size)
@@ -274,21 +289,17 @@ Standard.prototype.move_player = function () {
     }
     
     if (tile.friction) {
-
         this.player.vel.x *= tile.friction.x;
         this.player.vel.y *= tile.friction.y;
     }
-
     var t_y_up   = Math.floor(tY / this.tile_size);
     var t_y_down = Math.ceil(tY / this.tile_size);
     var y_near1  = Math.round((this.player.loc.y - offset) / this.tile_size);
     var y_near2  = Math.round((this.player.loc.y + offset) / this.tile_size);
-
     var t_x_left  = Math.floor(tX / this.tile_size);
     var t_x_right = Math.ceil(tX / this.tile_size);
     var x_near1   = Math.round((this.player.loc.x - offset) / this.tile_size);
     var x_near2   = Math.round((this.player.loc.x + offset) / this.tile_size);
-
     var top1    = this.get_tile(x_near1, t_y_up);
     var top2    = this.get_tile(x_near2, t_y_up);
     var bottom1 = this.get_tile(x_near1, t_y_down);
@@ -297,10 +308,7 @@ Standard.prototype.move_player = function () {
     var left2   = this.get_tile(t_x_left, y_near2);
     var right1  = this.get_tile(t_x_right, y_near1);
     var right2  = this.get_tile(t_x_right, y_near2);
-
-
     if (tile.jump && this.jump_switch > 15) {
-
         this.player.can_jump = true;
         
         this.jump_switch = 0;
@@ -316,36 +324,28 @@ Standard.prototype.move_player = function () {
     this.player.vel.x *= .9;
     
     if (left1.solid || left2.solid || right1.solid || right2.solid) {
-
         while (this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.floor(this.player.loc.x / this.tile_size), y_near2).solid)
             this.player.loc.x += 0.1;
-
         while (this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near1).solid
             || this.get_tile(Math.ceil(this.player.loc.x / this.tile_size), y_near2).solid)
             this.player.loc.x -= 0.1;
-
         var bounce = 0;
-
         if (left1.solid && left1.bounce > bounce) bounce = left1.bounce;
         if (left2.solid && left2.bounce > bounce) bounce = left2.bounce;
         if (right1.solid && right1.bounce > bounce) bounce = right1.bounce;
         if (right2.solid && right2.bounce > bounce) bounce = right2.bounce;
-
         this.player.vel.x *= -bounce || 0;
         
     }
     
     if (top1.solid || top2.solid || bottom1.solid || bottom2.solid) {
-
         while (this.get_tile(x_near1, Math.floor(this.player.loc.y / this.tile_size)).solid
             || this.get_tile(x_near2, Math.floor(this.player.loc.y / this.tile_size)).solid)
             this.player.loc.y += 0.1;
-
         while (this.get_tile(x_near1, Math.ceil(this.player.loc.y / this.tile_size)).solid
             || this.get_tile(x_near2, Math.ceil(this.player.loc.y / this.tile_size)).solid)
             this.player.loc.y -= 0.1;
-
         var bounce = 0;
         
         if (top1.solid && top1.bounce > bounce) bounce = top1.bounce;
@@ -354,7 +354,6 @@ Standard.prototype.move_player = function () {
         if (bottom2.solid && bottom2.bounce > bounce) bounce = bottom2.bounce;
         
         this.player.vel.y *= -bounce || 0;
-
         if ((bottom1.solid || bottom2.solid) && !tile.jump) {
             
             this.player.on_floor = true;
@@ -363,8 +362,6 @@ Standard.prototype.move_player = function () {
         
     }
     
-    // adjust camera
-
     var c_x = Math.round(this.player.loc.x - this.viewport.x/2);
     var c_y = Math.round(this.player.loc.y - this.viewport.y/2);
     var x_dif = Math.abs(c_x - this.camera.x);
@@ -427,39 +424,30 @@ Standard.prototype.move_player = function () {
     
     this.last_tile = tile.id;
 };
-
 Standard.prototype.update_player = function () {
-
     if (this.key.left) {
-
         if (this.player.vel.x > -this.current_map.vel_limit.x)
             this.player.vel.x -= this.current_map.movement_speed.left;
     }
-
     if (this.key.up) {
-
         if (this.player.can_jump && this.player.vel.y > -this.current_map.vel_limit.y) {
+          if (jumps > 0) {
             
             this.player.vel.y -= this.current_map.movement_speed.jump;
             this.player.can_jump = false;
+            jumps -= 1;
+          }
         }
     }
-
     if (this.key.right) {
-
         if (this.player.vel.x < this.current_map.vel_limit.x)
             this.player.vel.x += this.current_map.movement_speed.left;
     }
-
     this.move_player();
 };
-
 Standard.prototype.draw_player = function (context) {
-
     context.fillStyle = this.player.colour;
-
     context.beginPath();
-
     context.arc(
         this.player.loc.x + this.tile_size / 2 - this.camera.x,
         this.player.loc.y + this.tile_size / 2 - this.camera.y,
@@ -467,22 +455,16 @@ Standard.prototype.draw_player = function (context) {
         0,
         Math.PI * 2
     );
-
     context.fill();
 };
-
 Standard.prototype.update = function () {
-
     this.update_player();
 };
-
 Standard.prototype.draw = function (context) {
-
     this.draw_map(context, false);
     this.draw_player(context);
 };
-
-  window.requestAnimFrame =
+window.requestAnimFrame =
   window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
   window.mozRequestAnimationFrame ||
@@ -491,20 +473,16 @@ Standard.prototype.draw = function (context) {
   function(callback) {
     return window.setTimeout(callback, 1000 / 60);
   };
-
 var canvas = document.getElementById('canvas'),
     ctx = canvas.getContext('2d');
-
 canvas.width = 400;
 canvas.height = 400;
-
 var game = new Standard();
     game.set_viewport(canvas.width, canvas.height);
     game.load_map(map);
-
     game.limit_viewport = true;
-
 var Loop = function() {
+  
   
   ctx.fillStyle = '#333';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -512,7 +490,11 @@ var Loop = function() {
   game.update();
   game.draw(ctx);
   
+  ctx.font = '12pt Comic Sans';
+  ctx.fillStyle = '#CCC';
+  ctx.textBaseline = 'top';
+  ctx.fillText("Jumps: " + jumps, 10, 10);
+  
   window.requestAnimFrame(Loop);
 };
-
 Loop();
