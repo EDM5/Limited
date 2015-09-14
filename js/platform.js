@@ -1,7 +1,8 @@
 alert('Press "OK" to play!');
+var level = 1
       
       var jumps = 99;
-var map = {
+var map1 = {
     tile_size: 16,
     
     keys: [
