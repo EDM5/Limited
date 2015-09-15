@@ -94,8 +94,8 @@ var map1 = {
     },
     scripts: {
         change_colour: 'game.player.colour = "#"+(Math.random()*0xFFFFFF<<0).toString(16);',
-        next_level: 'alert("Yay! You won! Reloading map.");game.load_map(map);',
-        death: 'alert("You died!");game.load_map(map);',
+        next_level: 'alert("Next level.");level++;game.load_map("map" + level);',
+        death: 'alert("You died!");game.load_map("map" + level);',
         unlock: 'game.current_map.keys[10].solid = 0;game.current_map.keys[10].colour = "#888"; game.current_map.keys[11].colour = "#66FF00";'
     }
 };
