@@ -495,6 +495,7 @@ var Loop = function() {
   ctx.fillStyle = '#CCC';
   ctx.textBaseline = 'top';
   ctx.fillText("Jumps: " + jumps, 10, 10);
+  ctx.fillText("Level: " + jumps, 10, 20);
   
   window.requestAnimFrame(Loop);
 };
