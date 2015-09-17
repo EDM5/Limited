@@ -1,8 +1,8 @@
 alert('Press "OK" to play!');
 var level = 1
       
-      var jumps = 99;
-var map1 = {
+var jumps = 99;
+var map = {
     tile_size: 16,
     
     keys: [
@@ -94,8 +94,8 @@ var map1 = {
     },
     scripts: {
         change_colour: 'game.player.colour = "#"+(Math.random()*0xFFFFFF<<0).toString(16);',
-        next_level: 'alert("Next level.");level++;game.load_map(map1);',
-        death: 'alert("You died!");game.load_map(map1);',
+        next_level: 'alert("Next level.");level++;game.load_map("map");',
+        death: 'alert("You died!");game.load_map("map");',
         unlock: 'game.current_map.keys[10].solid = 0;game.current_map.keys[10].colour = "#888"; game.current_map.keys[11].colour = "#66FF00";'
     }
 };
