@@ -2,7 +2,7 @@ alert('Press "OK" to play!');
 var level = 1
       
 var jumps = 99;
-var map = {
+var map1 = {
     tile_size: 16,
     
     keys: [
@@ -63,11 +63,11 @@ var map = {
         [2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
         [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
         [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-        [2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2],
-        [2, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2],
-        [2, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2],
-        [2, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 2],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 2],
+        [2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 1, 1, 8, 2],
+        [2, 1, 1, 9, 1, 1, 2, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 1, 1, 8, 2],
+        [2, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 1, 1, 8, 2],
+        [2, 1, 1, 9, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 9, 1, 1, 9, 1, 1, 2, 1, 1, 1, 8, 2],
         [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     ],
@@ -94,11 +94,64 @@ var map = {
     },
     scripts: {
         change_colour: 'game.player.colour = "#"+(Math.random()*0xFFFFFF<<0).toString(16);',
-        next_level: 'alert("Next level.");level++;game.load_map("map");',
-        death: 'alert("You died!");game.load_map("map");',
+        next_level: 'alert("Next level.");level++;game.load_map("map2");',
+        death: 'alert("You died!");game.load_map("map1");',
         unlock: 'game.current_map.keys[10].solid = 0;game.current_map.keys[10].colour = "#888"; game.current_map.keys[11].colour = "#66FF00";'
     }
 };
+
+var map2 = {
+      tile_size: 16,
+      
+      keys: [
+        {id: 0, colour: '#FF0', solid: 0},
+        {id: 1, colour: '#888', solid: 0},
+        {id: 2,colour: '#555',solid: 1,bounce: 0.35},
+        {id: 3,colour: 'rgba(121, 220, 242, 0.4)',friction: {x: 0.9,y: 0.9},gravity: {x: 0,y: 0.1},jump: 1,fore: 1},
+        {id: 4,colour: '#777',jump: 1},
+        {id: 5,colour: '#E373FA',solid: 1,bounce: 1.1},
+        {id: 6,colour: '#666',solid: 1,bounce: 0},
+        {id: 7,colour: '#73C6FA',solid: 0,script: 'change_colour'},
+        {id: 8,colour: '#FADF73',solid: 0,script: 'next_level'},
+        {id: 9,colour: '#C93232',solid: 0,script: 'death'},
+        {id: 10,colour: '#555',solid: 1},
+        {id: 11,colour: '#0FF',solid: 0,script: 'unlock'}
+    ],
+    
+    data: [
+          
+      ],
+      
+      gravity: {
+        x: 0,
+        y: 0.3
+    },
+    
+    vel_limit: {
+        x: 2,
+        y: 16
+    },
+    
+    movement_speed: {
+        jump: 6,
+        left: 0.3,
+        right: 0.3
+    },
+    
+    player: {
+        x: 2,
+        y: 2,
+        colour: '#FF9900',
+    },
+    scripts: {
+        change_colour: 'game.player.colour = "#"+(Math.random()*0xFFFFFF<<0).toString(16);',
+        next_level: 'alert("Next level.");level++;game.load_map("map2");',
+        death: 'alert("You died!");game.load_map("map2");',
+        unlock: 'game.current_map.keys[10].solid = 0;game.current_map.keys[10].colour = "#888"; game.current_map.keys[11].colour = "#66FF00";'
+    }
+    
+};
+
 var Standard = function () {
     this.alert_errors   = false;
     this.log_info       = true;
